@@ -17,4 +17,5 @@ public class Ray {
     public point3 pointAt(double t) {
         return (point3) origin.plus(direction.times(t));
     }
+
 }

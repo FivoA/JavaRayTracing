@@ -32,7 +32,7 @@ public class PNGImageViewer extends Application {
 
         Scene scene = new Scene(root, 800, 600); // Set initial size, will be adjusted later
 
-        primaryStage.setTitle("Image Viewer");
+        primaryStage.setTitle("PNG Viewer");
         primaryStage.setScene(scene);
         primaryStage.show();
 

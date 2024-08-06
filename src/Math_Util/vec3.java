@@ -81,4 +81,11 @@ public class vec3 {
         return divide(v1,v1.length());
     }
 
+    public double length_squared() {
+        return this.length() * this.length();
+    }
+    public String toString(){
+        return this.x + ", " + this.y + ", " + this.z;
+    }
+
 }

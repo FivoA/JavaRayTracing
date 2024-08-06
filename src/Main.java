@@ -10,7 +10,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.awt.image.BufferedImage;
-import static Math_Util.Sphere.intersectSphere;
+
+import static Math_Util.Sphere.hit_sphere;
 import static Math_Util.color.*;
 import static Math_Util.vec3.*;
 
@@ -19,6 +20,11 @@ public class Main {
     private static BufferedImage image;
 
     public static color rayColor(Ray r){
+        Sphere sphere = new Sphere(1.0, new vec3(-5, 5, -10));
+        if(hit_sphere(sphere,r)>0.0){
+            return new color(1,0,0);
+        }
+
         //gradient function for sky
         vec3 unitDir = unitVector(r.getDirection());
         double a = 0.5 * (unitDir.getY() + 1.0);
@@ -87,6 +93,7 @@ public class Main {
             vec3 pixelCenter = add(pixel0Location, multiply(deltaRight, i));
             pixelCenter = add(pixelCenter, multiply(deltaDown, row));
             vec3 rayDir = subtract(pixelCenter, cameraCenter);
+            rayDir = unitVector(rayDir);
 
             Ray ray = new Ray(cameraCenter, rayDir);
             color col = rayColor(ray);
