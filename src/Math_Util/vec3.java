@@ -56,29 +56,29 @@ public class vec3 {
     public double length(){
         return Math.sqrt(x*x + y*y + z*z);
     }
-    public static vec3 addVectors(vec3 v1, vec3 v2){
+    public static vec3 add(vec3 v1, vec3 v2){
         return new vec3(v1.x+v2.x, v1.y+v2.y, v1.z+v2.z);
     }
-    public static vec3 subtractVectors(vec3 v1, vec3 v2){
+    public static vec3 subtract(vec3 v1, vec3 v2){
         return new vec3(v1.x-v2.x, v1.y-v2.y, v1.z-v2.z);
     }
-    public static vec3 multiplyVectors(vec3 v1, vec3 v2){
+    public static vec3 multiply(vec3 v1, vec3 v2){
         return new vec3(v1.x*v2.x, v1.y*v2.y, v1.z*v2.z);
     }
-    public static vec3 multiplyScalar(vec3 v1, double scalar){
+    public static vec3 multiply(vec3 v1, double scalar){
         return new vec3(v1.x*scalar, v1.y*scalar, v1.z*scalar);
     }
-    public static vec3 divideScalar(vec3 v1, double scalar){
+    public static vec3 divide(vec3 v1, double scalar){
         return new vec3(v1.x/scalar, v1.y/scalar, v1.z/scalar);
     }
-    public static double dotProduct(vec3 v1, vec3 v2){
+    public static double dot(vec3 v1, vec3 v2){
         return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
     }
-    public static vec3 crossProduct(vec3 v1, vec3 v2){
+    public static vec3 cross(vec3 v1, vec3 v2){
         return new vec3(v1.y * v2.z- v1.z * v2.y, v1.z * v2.x - v1.x -v2.z, v1.x * v2.y - v1.y * v2.x );
     }
     public static vec3 unitVector(vec3 v1){
-        return divideScalar(v1,v1.length());
+        return divide(v1,v1.length());
     }
 
 }

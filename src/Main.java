@@ -11,12 +11,23 @@ import java.io.PrintWriter;
 import static Math_Util.vec3.*;
 
 public class Main {
+    public static boolean hit_sphere(vec3 center, double radius, Ray ray){
+        vec3 oc = subtract(center , ray.getOrigin());
+        double a = dot(ray.getDirection(),ray.getDirection());
+        double b = -2.0 * dot(ray.getDirection(),oc);
+        double c = dot(oc,oc) - radius*radius;
+        double disc = b*b - 4.0*a*c;
+        return disc >= 0;
+    }
     public static color rayColor(Ray r){
+        if (hit_sphere(new vec3(0,-3,4),0.5,r)){
+            return new color(1,1,0);
+        }
         //gradient function for sky
         vec3 unitDir = unitVector(r.getDirection());
         double a = 0.5 * (unitDir.getY() + 1.0);
         color col = new color(1.0, 1.0, 1.0);
-        vec3 v = addVectors(multiplyScalar(col,1.0-a),multiplyScalar(new color(0.5,0.7,1.0),a));
+        vec3 v = add(multiply(col,1.0-a),multiply(new color(0.5,0.7,1.0),a));
         col = new color(v.getX(), v.getY(), v.getZ());
         return col;
     }
@@ -26,7 +37,6 @@ public class Main {
         double aspect_ratio = 16.0 / 9.0;
         int image_width = 400;
         int image_height = (int) (image_width / aspect_ratio);
-        image_height = (image_height) < 1 ? 1 : image_height;
 
         //camera code
         double distanceToViewport = 1.0;
@@ -37,14 +47,14 @@ public class Main {
         vec3 viewRightVec = new vec3(viewport_width,0,0);
         vec3 viewDownVec = new vec3(0,-viewport_height,0);
 
-        vec3 deltaRight = divideScalar(viewRightVec,image_width);
-        vec3 deltaDown = divideScalar(viewDownVec,image_width);
+        vec3 deltaRight = divide(viewRightVec,image_width);
+        vec3 deltaDown = divide(viewDownVec,image_width);
 
-        vec3 viewport_upper_left_point = subtractVectors(camera_center,new vec3(0,0,distanceToViewport));
-        viewport_upper_left_point = subtractVectors(viewport_upper_left_point,divideScalar(viewRightVec,2.0) );
-        viewport_upper_left_point = subtractVectors(viewport_upper_left_point, divideScalar(viewDownVec,2.0));
+        vec3 viewport_upper_left_point = subtract(camera_center,new vec3(0,0,distanceToViewport));
+        viewport_upper_left_point = subtract(viewport_upper_left_point,divide(viewRightVec,2.0) );
+        viewport_upper_left_point = subtract(viewport_upper_left_point, divide(viewDownVec,2.0));
 
-        vec3 pixel0_location =  addVectors(viewport_upper_left_point, multiplyScalar(addVectors(deltaRight,deltaDown),0.5));
+        vec3 pixel0_location =  add(viewport_upper_left_point, multiply(add(deltaRight,deltaDown),0.5));
 
         System.out.printf("Starting render...");
         BufferedWriter writer = new BufferedWriter(new FileWriter("image.ppm"));
@@ -53,15 +63,15 @@ public class Main {
         for (int j = 0; j < image_height; j++) {
             System.out.println("Scanlines remaining: " + (image_height-j));
             for (int i = 0; i < image_width; i++) {
-                vec3 pixelCenter = addVectors(pixel0_location,multiplyScalar(deltaRight,i));
-                pixelCenter =  addVectors(pixelCenter, multiplyScalar(deltaDown,j));
-                vec3 rayDir = subtractVectors(pixelCenter,camera_center);
+                vec3 pixelCenter = add(pixel0_location,multiply(deltaRight,i));
+                pixelCenter =  add(pixelCenter, multiply(deltaDown,j));
+                vec3 rayDir = subtract(pixelCenter,camera_center);
                 Ray ray = new Ray(camera_center,rayDir);
                 color col = rayColor(ray);
                 color.writeColor(writer,col);
             }
         }
-        System.out.println("Render done.");
+        System.out.println("Render done");
         writer.close();
     }
 }
