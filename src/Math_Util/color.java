@@ -21,4 +21,7 @@ public class color extends vec3{
         bw.write(gbyte+" ");
         bw.write(bbyte+"\n");
     }
+    public static color multiply(color a, double factor) {
+        return new color(a.getX()*factor, a.getY()*factor, a.getZ()*factor);
+    }
 }
