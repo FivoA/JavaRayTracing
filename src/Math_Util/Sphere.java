@@ -22,12 +22,9 @@ public class Sphere {
         if(t1 < 0.0) return t2; // Potentially inside
         return t1;
     }
-
-
     public double getRadius() {
         return this.radius;
     }
-
     public vec3 getCenter() {
         return this.center;
     }
