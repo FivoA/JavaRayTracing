@@ -6,7 +6,6 @@ import static Math_Util.vec3.subtract;
 public class Sphere {
     public double radius;
     public vec3 center;
-
     public Sphere(double radius, vec3 center) {
         this.radius = radius;
         this.center = center;

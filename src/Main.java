@@ -94,7 +94,6 @@ public class Main {
             pixelCenter = add(pixelCenter, multiply(deltaDown, row));
             vec3 rayDir = subtract(pixelCenter, cameraCenter);
             rayDir = unitVector(rayDir);
-
             Ray ray = new Ray(cameraCenter, rayDir);
             color col = rayColor(ray);
             int r = (int) (col.getX() * 255.999);
