@@ -1,18 +1,23 @@
 import Math_Util.*;
 
+import javax.imageio.ImageIO;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-
+import java.awt.image.BufferedImage;
 import static Math_Util.Sphere.intersectSphere;
 import static Math_Util.color.*;
 import static Math_Util.vec3.*;
 
 public class Main {
+    private static final int NUM_CORES = Runtime.getRuntime().availableProcessors();
+    private static BufferedImage image;
+
     public static color rayColor(Ray r){
         //gradient function for sky
         vec3 unitDir = unitVector(r.getDirection());
@@ -46,36 +51,38 @@ public class Main {
         viewport_upper_left_point = subtract(viewport_upper_left_point, divide(viewDownVec,2.0));
 
         vec3 pixel0_location =  add(viewport_upper_left_point, multiply(add(deltaRight,deltaDown),0.5));
-        BufferedWriter writer = new BufferedWriter(new FileWriter("image.ppm"));
 
-        writer.write("P3"+ "\n" + image_width + " " + image_height + "\n255\n");
+        image = new BufferedImage(image_width, image_height, BufferedImage.TYPE_INT_RGB);
 
         //long startTime = System.nanoTime(); // Start time
-        renderImage(image_width,image_height,pixel0_location,deltaRight,deltaDown,camera_center,writer);
+
+        try {
+            renderImage(image_width, image_height, pixel0_location, deltaRight, deltaDown, camera_center);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
         //long endTime = System.nanoTime(); // End time
 
-        writer.close();
+        File outputfile = new File("image.png");
+        ImageIO.write(image, "png", outputfile);
+
         //long duration = (endTime - startTime) / 1_000_000; // MS conversion
         //System.out.println("Rendering took: " + duration + " ms");
 
     }
-
-    private static final int NUM_CORES = Runtime.getRuntime().availableProcessors();
-    public static void renderImage(int imageWidth, int imageHeight, vec3 pixel0Location, vec3 deltaRight, vec3 deltaDown, point3 cameraCenter, BufferedWriter writer) {
+    public static void renderImage(int imageWidth, int imageHeight, vec3 pixel0Location, vec3 deltaRight, vec3 deltaDown, point3 cameraCenter) throws InterruptedException {
         ExecutorService executor = Executors.newFixedThreadPool(NUM_CORES);
+
         for (int j = 0; j < imageHeight; j++) {
             final int row = j;
-            executor.submit(() -> {
-                try {
-                    renderRow(row, imageWidth, pixel0Location, deltaRight, deltaDown, cameraCenter, writer);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            });
+            executor.submit(() -> {renderRow(row, imageWidth, pixel0Location, deltaRight, deltaDown, cameraCenter);});
         }
         executor.shutdown();
+        executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
     }
-    private static void renderRow(int row, int imageWidth, vec3 pixel0Location, vec3 deltaRight, vec3 deltaDown, point3 cameraCenter, BufferedWriter writer) throws IOException {
+
+    private static void renderRow(int row, int imageWidth, vec3 pixel0Location, vec3 deltaRight, vec3 deltaDown, point3 cameraCenter) {
         for (int i = 0; i < imageWidth; i++) {
             vec3 pixelCenter = add(pixel0Location, multiply(deltaRight, i));
             pixelCenter = add(pixelCenter, multiply(deltaDown, row));
@@ -83,7 +90,11 @@ public class Main {
 
             Ray ray = new Ray(cameraCenter, rayDir);
             color col = rayColor(ray);
-            writeColor(writer, col);
+            int r = (int) (col.getX() * 255.999);
+            int g = (int) (col.getY() * 255.999);
+            int b = (int) (col.getZ() * 255.999);
+            int rgb = (r << 16) | (g << 8) | b;
+            image.setRGB(i, row, rgb);
         }
     }
 }
