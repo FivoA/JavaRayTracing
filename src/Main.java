@@ -12,6 +12,7 @@ import static Math_Util.vec3.*;
 
 public class Main {
     public static color rayColor(Ray r){
+        //gradient function for sky
         vec3 unitDir = unitVector(r.getDirection());
         double a = 0.5 * (unitDir.getY() + 1.0);
         color col = new color(1.0, 1.0, 1.0);
@@ -36,12 +37,12 @@ public class Main {
         vec3 viewRightVec = new vec3(viewport_width,0,0);
         vec3 viewDownVec = new vec3(0,-viewport_height,0);
 
-        vec3 deltaRight = vec3.divideScalar(viewRightVec,image_width);
-        vec3 deltaDown = vec3.divideScalar(viewDownVec,image_width);
+        vec3 deltaRight = divideScalar(viewRightVec,image_width);
+        vec3 deltaDown = divideScalar(viewDownVec,image_width);
 
         vec3 viewport_upper_left_point = subtractVectors(camera_center,new vec3(0,0,distanceToViewport));
-        viewport_upper_left_point = subtractVectors(viewport_upper_left_point,vec3.divideScalar(viewRightVec,2.0) );
-        viewport_upper_left_point = subtractVectors(viewport_upper_left_point, vec3.divideScalar(viewDownVec,2.0));
+        viewport_upper_left_point = subtractVectors(viewport_upper_left_point,divideScalar(viewRightVec,2.0) );
+        viewport_upper_left_point = subtractVectors(viewport_upper_left_point, divideScalar(viewDownVec,2.0));
 
         vec3 pixel0_location =  addVectors(viewport_upper_left_point, multiplyScalar(addVectors(deltaRight,deltaDown),0.5));
 
