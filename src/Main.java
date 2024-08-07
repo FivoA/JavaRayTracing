@@ -20,10 +20,12 @@ public class Main {
     private static BufferedImage image;
 
     public static color rayColor(Ray r){
-        Sphere sphere = new Sphere(1.0, new vec3(-5, 5, -10));
-        if(hit_sphere(sphere,r)>0.0){
-            return new color(1,0,0);
+        Sphere sphere = new Sphere(0.5, new vec3(0, 0, -1));
+        double t = hit_sphere(sphere, r);
+        if (t > 0.0) {
+            return new color( 1, 0, 0);
         }
+
 
         //gradient function for sky
         vec3 unitDir = unitVector(r.getDirection());
@@ -50,7 +52,7 @@ public class Main {
         vec3 viewDownVec = new vec3(0,-viewport_height,0);
 
         vec3 deltaRight = divide(viewRightVec,image_width);
-        vec3 deltaDown = divide(viewDownVec,image_width);
+        vec3 deltaDown = divide(viewDownVec,image_height);
 
         vec3 viewport_upper_left_point = subtract(camera_center,new vec3(0,0,1));
         viewport_upper_left_point = subtract(viewport_upper_left_point,divide(viewRightVec,2.0) );

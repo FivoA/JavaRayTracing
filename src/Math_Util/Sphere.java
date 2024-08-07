@@ -11,15 +11,19 @@ public class Sphere {
         this.center = center;
     }
     public static double hit_sphere(Sphere sphere, Ray ray) {
-        vec3 ro = subtract(ray.getOrigin(),sphere.getCenter());
-        double b = dot(ro,ray.getDirection());
-        double c = dot(ro,ro) - sphere.getRadius()*sphere.getRadius();
+        ray.setOrigin(subtract(ray.getOrigin(), sphere.center));
+        double b = dot(ray.getOrigin(), ray.getDirection());
+        double c = dot(ray.getOrigin(), ray.getOrigin()) - sphere.radius*sphere.radius;
         double d = b*b - c;
-        if(d < 0.0) return -1.; // No intersection
+        if (d < 0.0) {
+            return -1.0;
+        }
         d = Math.sqrt(d);
-        double t1 = -b - d;
-        double t2 = -b + d;
-        if(t1 < 0.0) return t2; // Potentially inside
+        double t1 = -b-d;
+        double t2 = -b+d;
+        if (t1 < 0.0) {
+            return t2;
+        }
         return t1;
     }
     public double getRadius() {
