@@ -1,5 +1,7 @@
 package Math_Util;
 
+import static Math_Util.vec3.*;
+
 public class Ray {
     private vec3 origin;
     private vec3 direction;
@@ -7,7 +9,6 @@ public class Ray {
         this.origin = origin;
         this.direction = direction;
     }
-    public Ray(){}
     public vec3 getOrigin() {
         return origin;
     }
@@ -18,7 +19,7 @@ public class Ray {
         this.origin = origin;
     }
     public vec3 pointAt(double t) {
-        return origin.plus(direction.times(t));
+        return add(origin, multiply(direction, t));
     }
     public String toString(){
         return "origin: " + origin.toString() + " direction: " + direction.toString();

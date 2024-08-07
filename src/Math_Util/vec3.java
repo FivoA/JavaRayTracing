@@ -11,11 +11,6 @@ public class vec3 {
         this.y = y;
         this.z = z;
     }
-    public vec3() {
-        this.x = 0;
-        this.y = 0;
-        this.z = 0;
-    }
     public double getX() {
         return x;
     }
@@ -25,37 +20,11 @@ public class vec3 {
     public double getZ(){
         return z;
     }
-
-    public vec3 operatorMinus(){
-        return new vec3(-x,-y,-z);
-    }
-    public vec3 plus(vec3 other){
-        this.x += other.x;
-        this.y += other.y;
-        this.z += other.z;
-        return this;
-    }
-    public vec3 minus(vec3 other){
-        this.x -= other.x;
-        this.y -= other.y;
-        this.z -= other.z;
-        return this;
-    }
-    public vec3 times(double scalar){
-        this.x *= scalar;
-        this.y *= scalar;
-        this.z *= scalar;
-        return this;
-    }
-    public vec3 divide(double scalar){
-        this.x /= scalar;
-        this.y /= scalar;
-        this.z /= scalar;
-        return this;
-    }
     public double length(){
         return Math.sqrt(x*x + y*y + z*z);
     }
+
+
     public static vec3 add(vec3 v1, vec3 v2){
         return new vec3(v1.x+v2.x, v1.y+v2.y, v1.z+v2.z);
     }
@@ -64,6 +33,9 @@ public class vec3 {
     }
     public static vec3 multiply(vec3 v1, vec3 v2){
         return new vec3(v1.x*v2.x, v1.y*v2.y, v1.z*v2.z);
+    }
+    public static color multiply(color col, vec3 v2){
+        return new color(col.getX()*v2.x, col.getY()*v2.y, col.getZ()*v2.z);
     }
     public static vec3 multiply(vec3 v1, double scalar){
         return new vec3(v1.x*scalar, v1.y*scalar, v1.z*scalar);
@@ -74,16 +46,10 @@ public class vec3 {
     public static double dot(vec3 v1, vec3 v2){
         return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
     }
-    public static vec3 cross(vec3 v1, vec3 v2){
-        return new vec3(v1.y * v2.z- v1.z * v2.y, v1.z * v2.x - v1.x -v2.z, v1.x * v2.y - v1.y * v2.x );
-    }
     public static vec3 unitVector(vec3 v1){
         return divide(v1,v1.length());
     }
-
-    public double length_squared() {
-        return this.length() * this.length();
-    }
+    @Override
     public String toString(){
         return this.x + ", " + this.y + ", " + this.z;
     }

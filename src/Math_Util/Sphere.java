@@ -13,20 +13,18 @@ public class Sphere {
         this.color = color;
     }
     public static double hit_sphere(Sphere sphere, Ray ray) {
-        ray.setOrigin(subtract(ray.getOrigin(), sphere.center));
-        double b = dot(ray.getOrigin(), ray.getDirection());
-        double c = dot(ray.getOrigin(), ray.getOrigin()) - sphere.radius*sphere.radius;
-        double d = b*b - c;
-        if (d < 0.0) {
+        vec3 oc = subtract(sphere.center, ray.getOrigin());
+        double a = dot(ray.getDirection(), ray.getDirection());
+        double h = dot(ray.getDirection(), oc);
+        double c = oc.length() * oc.length() - sphere.radius * sphere.radius;
+        double disc = h*h - a*c;
+
+        if (disc < 0.0){
             return -1.0;
         }
-        d = Math.sqrt(d);
-        double t1 = -b-d;
-        double t2 = -b+d;
-        if (t1 < 0.0) {
-            return t2;
+        else{
+            return (h- Math.sqrt(disc)) / a;
         }
-        return t1;
     }
     public double getRadius() {
         return this.radius;

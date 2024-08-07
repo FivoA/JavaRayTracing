@@ -2,13 +2,10 @@ import Math_Util.*;
 import javafx.util.Pair;
 
 import javax.imageio.ImageIO;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -22,9 +19,7 @@ public class Main {
     private static final int NUM_CORES = Runtime.getRuntime().availableProcessors();
     private static BufferedImage image;
     //these values are chosen by pure arbitrariness
-    private static final vec3 sunDirection = new vec3(3,-5,1);
-    private static final vec3 skyColorHigh = new vec3(0.14, 0.21, 0.49);
-    private static final vec3 skyColorLow = new vec3(0.36, 0.45, 0.57);
+    private static final vec3 sunDirection = new vec3(-4,3,1);
     private static final vec3 sunColor = new vec3(1.64, 1.27, 0.99);
     private static final List<Sphere> sphereList = new ArrayList<Sphere>();
 
@@ -34,10 +29,12 @@ public class Main {
         int sphereIndex = tAndIndex.getValue();
         if (sphereIndex >= 0 && t > 0.0) {
             vec3 hitPoint = r.pointAt(t);
-            vec3 normal = unitVector(subtract(hitPoint,sphereList.get(sphereIndex).center));
-            vec3 light = lightAtPoint(hitPoint,normal);
+            vec3 normal = subtract(hitPoint,sphereList.get(sphereIndex).center);
+            double iD = 0.8 * diffuseLight(normal);
+            double iA = 0.2;
 
-            return sphereList.get(sphereIndex).getColor();
+            vec3 col =  add(multiply(sphereList.get(sphereIndex).getColor(), iD),multiply(sphereList.get(sphereIndex).getColor(), iA));
+            return new color(col.getX(),col.getY(),col.getZ());
         }
 
 
@@ -66,7 +63,7 @@ public class Main {
         double distanceToViewport = 1.0;
         double viewport_height = 2.0;
         double viewport_width = viewport_height * ((double) image_width / image_height);
-        point3 camera_center = new point3(0,0,0);
+        vec3 camera_center = new point3(0,0,0);
         // viewport vectors
         vec3 viewRightVec = new vec3(viewport_width,0,0);
         vec3 viewDownVec = new vec3(0,-viewport_height,0);
@@ -99,7 +96,7 @@ public class Main {
         //System.out.println("Rendering took: " + duration + " ms");
 
     }
-    public static void renderImage(int imageWidth, int imageHeight, vec3 pixel0Location, vec3 deltaRight, vec3 deltaDown, point3 cameraCenter) throws InterruptedException {
+    public static void renderImage(int imageWidth, int imageHeight, vec3 pixel0Location, vec3 deltaRight, vec3 deltaDown, vec3 cameraCenter) throws InterruptedException {
         ExecutorService executor = Executors.newFixedThreadPool(NUM_CORES);
 
         for (int j = 0; j < imageHeight; j++) {
@@ -110,7 +107,7 @@ public class Main {
         executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
     }
 
-    private static void renderRow(int row, int imageWidth, vec3 pixel0Location, vec3 deltaRight, vec3 deltaDown, point3 cameraCenter) {
+    private static void renderRow(int row, int imageWidth, vec3 pixel0Location, vec3 deltaRight, vec3 deltaDown, vec3 cameraCenter) {
         for (int i = 0; i < imageWidth; i++) {
             vec3 pixelCenter = add(pixel0Location, multiply(deltaRight, i));
             pixelCenter = add(pixelCenter, multiply(deltaDown, row));
@@ -125,11 +122,9 @@ public class Main {
             image.setRGB(i, row, rgb);
         }
     }
-    public static vec3 lightAtPoint(vec3 point, vec3 N){
+    public static double diffuseLight(vec3 N){
         vec3 L = unitVector(sunDirection);
-        double NdL = Math.max(dot(N,L),0.0);
-        double NdSky = Math.clamp(0.5*N.getY()+0.5, 0.0, 1.0);
-        return add(multiply(sunColor, NdL),multiply(skyColorHigh,NdSky));
+        return Math.clamp(dot(N,L),0.0,1.0);
     }
     public static Pair<Double, Integer> closestSphereIntersect(Ray ray){
         double closestHit = Double.MAX_VALUE;
