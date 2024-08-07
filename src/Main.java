@@ -1,10 +1,13 @@
 import Math_Util.*;
+import javafx.util.Pair;
 
 import javax.imageio.ImageIO;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -18,16 +21,31 @@ import static Math_Util.vec3.*;
 public class Main {
     private static final int NUM_CORES = Runtime.getRuntime().availableProcessors();
     private static BufferedImage image;
+    //these values are chosen by pure arbitrariness
+    private static final vec3 sunDirection = new vec3(3,-5,1);
+    private static final vec3 skyColorHigh = new vec3(0.14, 0.21, 0.49);
+    private static final vec3 skyColorLow = new vec3(0.36, 0.45, 0.57);
+    private static final vec3 sunColor = new vec3(1.64, 1.27, 0.99);
+    private static final List<Sphere> sphereList = new ArrayList<Sphere>();
 
     public static color rayColor(Ray r){
-        Sphere sphere = new Sphere(0.5, new vec3(0, 0, -1));
-        double t = hit_sphere(sphere, r);
-        if (t > 0.0) {
-            return new color( 1, 0, 0);
+        Pair<Double,Integer> tAndIndex = closestSphereIntersect(r);
+        double t = tAndIndex.getKey();
+        int sphereIndex = tAndIndex.getValue();
+        if (sphereIndex >= 0 && t > 0.0) {
+            vec3 hitPoint = r.pointAt(t);
+            vec3 normal = unitVector(subtract(hitPoint,sphereList.get(sphereIndex).center));
+            vec3 light = lightAtPoint(hitPoint,normal);
+
+            return sphereList.get(sphereIndex).getColor();
         }
 
 
         //gradient function for sky
+        if (r.getDirection().getY()<0.0){
+            //void
+            return new color( 0.25, 0.5, 0.75);
+        }
         vec3 unitDir = unitVector(r.getDirection());
         double a = 0.5 * (unitDir.getY() + 1.0);
         color col = new color(1.0, 1.0, 1.0);
@@ -38,6 +56,8 @@ public class Main {
 
 
     public static void main(String[] args) throws IOException {
+        sphereList.add(new Sphere(0.5, new vec3(0, 0, -1),new color(1,0,0)));
+        sphereList.add(new Sphere(0.5, new vec3(2, 0, -2), new color(0,1,0)));
         double aspect_ratio = 16.0 / 9.0;
         int image_width = 400;
         int image_height = (int) (image_width / aspect_ratio);
@@ -104,5 +124,23 @@ public class Main {
             int rgb = (r << 16) | (g << 8) | b;
             image.setRGB(i, row, rgb);
         }
+    }
+    public static vec3 lightAtPoint(vec3 point, vec3 N){
+        vec3 L = unitVector(sunDirection);
+        double NdL = Math.max(dot(N,L),0.0);
+        double NdSky = Math.clamp(0.5*N.getY()+0.5, 0.0, 1.0);
+        return add(multiply(sunColor, NdL),multiply(skyColorHigh,NdSky));
+    }
+    public static Pair<Double, Integer> closestSphereIntersect(Ray ray){
+        double closestHit = Double.MAX_VALUE;
+        double bestT = -1.0;
+        int sphereIndex = -1;
+        for(int i = 0; i < sphereList.size(); i++){
+            double t = hit_sphere(sphereList.get(i),ray);
+            if(t < 0.0 || t > closestHit) continue;
+            closestHit = bestT = t;
+            sphereIndex = i;
+        }
+        return new Pair<>(bestT,sphereIndex);
     }
 }

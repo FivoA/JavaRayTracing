@@ -6,9 +6,11 @@ import static Math_Util.vec3.subtract;
 public class Sphere {
     public double radius;
     public vec3 center;
-    public Sphere(double radius, vec3 center) {
+    private color color;
+    public Sphere(double radius, vec3 center, color color) {
         this.radius = radius;
         this.center = center;
+        this.color = color;
     }
     public static double hit_sphere(Sphere sphere, Ray ray) {
         ray.setOrigin(subtract(ray.getOrigin(), sphere.center));
@@ -31,6 +33,9 @@ public class Sphere {
     }
     public vec3 getCenter() {
         return this.center;
+    }
+    public color getColor() {
+        return this.color;
     }
 
 }
