@@ -49,7 +49,7 @@ Fivo Ahmed - @fivo_ow (Discord) - fivo.ahmed23@gmail.com
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
 
-This Code has been built with inspiration from the "Ray Tracing in One Weekend" - series by Peter Shirley, Trevor David Black, and Steve Hollasch as well as being largely built off of my learnings from the course IN0039 at the Technical University of Munich! 
+This Code has been built with inspiration from the "Ray Tracing in One Weekend" - series by Peter Shirley, Trevor David Black, and Steve Hollasch as well as being largely based on my learnings from the course IN0039 at the Technical University of Munich! 
 * [Ray Tracing in One Weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html)
 
 
