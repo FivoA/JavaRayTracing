@@ -1,5 +1,4 @@
 import Math_Util.*;
-import javafx.util.Pair;
 
 import javax.imageio.ImageIO;
 import java.io.File;
@@ -13,9 +12,14 @@ import java.awt.image.BufferedImage;
 
 import static Math_Util.Sphere.hit_sphere;
 import static Math_Util.color.*;
-import static Math_Util.vec3.*;
 
 public class Main {
+    private static final int MSAA_LEVEL = 8;
+    private static final double aspect_ratio = 16.0 / 9.0;
+    private static final int image_width = 400;
+    private static final int image_height = (int) (image_width / aspect_ratio);
+
+
     private static final int NUM_CORES = Runtime.getRuntime().availableProcessors();
     private static BufferedImage image;
     //these values are chosen by pure arbitrariness
@@ -41,7 +45,7 @@ public class Main {
         vec3 unitDir = unitVector(r.getDirection());
         double a = 0.5 * (unitDir.getY() + 1.0);
         color col = new color(1.0, 1.0, 1.0);
-        vec3 v = add(multiply(col,1.0-a),multiply(new color(0.5,0.7,1.0),a));
+        vec3 v = add(multiply(col,1.0-a),multiply(new color(0.1,0.8,1.0),a));
         v = tonemapAndGammaCorrect(v);
         col = new color(v.getX(), v.getY(), v.getZ());
 
@@ -53,10 +57,6 @@ public class Main {
         sphereList.add(new Sphere(0.25, new vec3(0, -0.25, -2),new color(0.3,0.8,0.3)));
         sphereList.add(new Sphere(0.5, new vec3(1, 0, -2.2), new color(0.8,0.8,0.3)));
         sphereList.add(new Sphere(0.5, new vec3(-2, 0, -7), new color(0.8,0.3,0.3)));
-
-        double aspect_ratio = 16.0 / 9.0;
-        int image_width = 400;
-        int image_height = (int) (image_width / aspect_ratio);
 
         // FOV in degrees
         double vertical_fov_degrees = 45.0;
@@ -82,7 +82,7 @@ public class Main {
 
         image = new BufferedImage(image_width, image_height, BufferedImage.TYPE_INT_RGB);
 
-        //long startTime = System.nanoTime(); // Start time
+        long startTime = System.nanoTime(); // Start time
 
         try {
             renderImage(image_width, image_height, pixel0_location, deltaRight, deltaDown, camera_center);
@@ -90,13 +90,13 @@ public class Main {
             throw new RuntimeException(e);
         }
 
-        //long endTime = System.nanoTime(); // End time
+        long endTime = System.nanoTime(); // End time
 
         File outputfile = new File("image.png");
         ImageIO.write(image, "png", outputfile);
 
-        //long duration = (endTime - startTime) / 1_000_000; // MS conversion
-        //System.out.println("Rendering took: " + duration + " ms");
+        long duration = (endTime - startTime) / 1_000_000; // MS conversion
+        System.out.println("Rendering took: " + duration + " ms");
 
     }
     public static void renderImage(int imageWidth, int imageHeight, vec3 pixel0Location, vec3 deltaRight, vec3 deltaDown, vec3 cameraCenter) throws InterruptedException {
@@ -116,8 +116,22 @@ public class Main {
             pixelCenter = add(pixelCenter, multiply(deltaDown, row));
             vec3 rayDir = subtract(pixelCenter, cameraCenter);
             rayDir = unitVector(rayDir);
+
             Ray ray = new Ray(cameraCenter, rayDir);
             color col = rayColor(ray);
+            // MSAA Code
+            for (int j = 0; j < MSAA_LEVEL; j++) {
+                double offsetRight = DoubleRandom.getRandomNumber(-0.5, 0.5);
+                double offsetDown = DoubleRandom.getRandomNumber(-0.5, 0.5);
+                vec3 samplePoint = add(pixelCenter, add(multiply(deltaRight, offsetRight), multiply(deltaDown, offsetDown)));
+                vec3 sampleRayDir = subtract(samplePoint, cameraCenter);
+                sampleRayDir = unitVector(sampleRayDir);
+
+                Ray r = new Ray(cameraCenter, sampleRayDir);
+                col = add(col, rayColor(r));
+            }
+            col = color.divide(col,MSAA_LEVEL+1);
+            //
             int r = (int) (col.getX() * 255.999);
             int g = (int) (col.getY() * 255.999);
             int b = (int) (col.getZ() * 255.999);
@@ -159,11 +173,13 @@ public class Main {
             float t = planeIntersect(ro,rd,planeNormal,planePoint);
             if(t < 0.0 || t > closestHit) continue;
             closestHit = query.t = t;
-            query.color = checkerboard(add(ro,multiply(rd,t)),3.0);
+            query.color = checkerboard(add(ro,multiply(rd,t)),4.0);
             query.normal = planeNormal;
         }
         return query;
     }
+
+
 
 
     public static float planeIntersect(vec3 ro, vec3 rd, vec3 n, vec3 p){
