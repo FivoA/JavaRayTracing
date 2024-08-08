@@ -19,7 +19,7 @@ public class Main {
     private static final int NUM_CORES = Runtime.getRuntime().availableProcessors();
     private static BufferedImage image;
     //these values are chosen by pure arbitrariness
-    private static final vec3 sunDirection = new vec3(0,0,1);
+    private static final vec3 sunDirection = new vec3(-1,0,0);
     private static final vec3 sunColor = new vec3(1.64, 1.27, 0.99);
     private static final vec3 skyColorHigh = new vec3(0.14, 0.21, 0.49);
 
@@ -54,7 +54,7 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
         sphereList.add(new Sphere(0.5, new vec3(0, 0, -2),new color(1,0,0)));
-        sphereList.add(new Sphere(0.5, new vec3(2, 0, -4), new color(0,1,0)));
+        sphereList.add(new Sphere(0.5, new vec3(1, 0, -2), new color(0,1,0)));
         sphereList.add(new Sphere(0.5, new vec3(-2, 0, -6.5), new color(0,1,0)));
 
         double aspect_ratio = 16.0 / 9.0;
@@ -132,9 +132,17 @@ public class Main {
         vec3 L = unitVector(sunDirection);
         double NdL = Math.max(dot(N,L),0.0);
         double NdSky = Math.clamp(0.5*N.getY()+0.5, 0.0, 1.0 );
-        return add(multiply(sunColor,NdL), multiply(skyColorHigh , NdSky));
+        double shadow = shadowRay(add(point,multiply(N,0.001)),L); // offset N to avoid self shadowing
+        return add(multiply(multiply(sunColor,NdL),shadow), multiply(skyColorHigh , NdSky));
     }
-
+    public static double shadowRay(vec3 ro, vec3 rd){
+        Pair<Double, Integer> pair = closestSphereIntersect(new Ray(ro,rd));
+        double t = pair.getKey();
+        if (t < 0.0) {
+            return 1.0;
+        }
+        return 0.0;
+    }
     public static Pair<Double, Integer> closestSphereIntersect(Ray ray){
         double closestHit = Double.MAX_VALUE;
         double bestT = -1.0;
