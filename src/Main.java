@@ -19,43 +19,40 @@ public class Main {
     private static final int NUM_CORES = Runtime.getRuntime().availableProcessors();
     private static BufferedImage image;
     //these values are chosen by pure arbitrariness
-    private static final vec3 sunDirection = new vec3(-1,0,0);
+    private static final vec3 sunDirection = new vec3(-1,0.5,0.2);
     private static final vec3 sunColor = new vec3(1.64, 1.27, 0.99);
     private static final vec3 skyColorHigh = new vec3(0.14, 0.21, 0.49);
 
     private static final List<Sphere> sphereList = new ArrayList<Sphere>();
 
     public static color rayColor(Ray r){
-        Pair<Double,Integer> tAndIndex = closestSphereIntersect(r);
-        double t = tAndIndex.getKey();
-        int sphereIndex = tAndIndex.getValue();
-        if (sphereIndex >= 0 && t > 0.0) {
-            vec3 hitPoint = r.pointAt(t);
-            vec3 normal = subtract(hitPoint,sphereList.get(sphereIndex).center);
-            vec3 light = lightAtPoint(hitPoint,normal);
-            vec3 col = multiply(light,sphereList.get(sphereIndex).getColor());
+        RayQuery query = sceneIntersect(r.getOrigin(),r.getDirection());
+        if (query.t >= 0.0) {
+            vec3 hitPoint = add(r.getOrigin(),multiply(r.getDirection(),query.t));
+            vec3 light = lightAtPoint(hitPoint,query.normal);
+
+            vec3 col =  multiply( query.color , light);
+            col = tonemapAndGammaCorrect(col);
             return new color(col.getX(),col.getY(),col.getZ());
         }
 
 
-        //gradient function for sky
-        if (r.getDirection().getY()<0.0){
-            //void
-            return new color( 0.25, 0.5, 0.75);
-        }
+        //gradient function for sky, aka ray has not hit sphere or plane
         vec3 unitDir = unitVector(r.getDirection());
         double a = 0.5 * (unitDir.getY() + 1.0);
         color col = new color(1.0, 1.0, 1.0);
         vec3 v = add(multiply(col,1.0-a),multiply(new color(0.5,0.7,1.0),a));
+        v = tonemapAndGammaCorrect(v);
         col = new color(v.getX(), v.getY(), v.getZ());
+
         return col;
     }
 
 
     public static void main(String[] args) throws IOException {
-        sphereList.add(new Sphere(0.5, new vec3(0, 0, -2),new color(1,0,0)));
-        sphereList.add(new Sphere(0.5, new vec3(1, 0, -2), new color(0,1,0)));
-        sphereList.add(new Sphere(0.5, new vec3(-2, 0, -6.5), new color(0,1,0)));
+        sphereList.add(new Sphere(0.25, new vec3(0, -0.25, -2),new color(0.3,0.8,0.3)));
+        sphereList.add(new Sphere(0.5, new vec3(1, 0, -2.2), new color(0.8,0.8,0.3)));
+        sphereList.add(new Sphere(0.5, new vec3(-2, 0, -7), new color(0.8,0.3,0.3)));
 
         double aspect_ratio = 16.0 / 9.0;
         int image_width = 400;
@@ -136,23 +133,49 @@ public class Main {
         return add(multiply(multiply(sunColor,NdL),shadow), multiply(skyColorHigh , NdSky));
     }
     public static double shadowRay(vec3 ro, vec3 rd){
-        Pair<Double, Integer> pair = closestSphereIntersect(new Ray(ro,rd));
-        double t = pair.getKey();
+        double t = sceneIntersect(ro, rd).t;
         if (t < 0.0) {
             return 1.0;
         }
         return 0.0;
     }
-    public static Pair<Double, Integer> closestSphereIntersect(Ray ray){
+
+    public static RayQuery sceneIntersect(vec3 ro, vec3 rd){
         double closestHit = Double.MAX_VALUE;
-        double bestT = -1.0;
-        int sphereIndex = -1;
-        for(int i = 0; i < sphereList.size(); i++){
-            double t = hit_sphere(sphereList.get(i),ray);
-            if(t < 0.0 || t > closestHit) continue;
-            closestHit = bestT = t;
-            sphereIndex = i;
+        // Query with t < 0 has not hit anything
+        RayQuery query = new RayQuery(-1.0,new vec3(0),new vec3(0));
+        //Spheres
+        for (Sphere sphere : sphereList) {
+            double t = hit_sphere(sphere, new Ray(ro, rd));
+            if (t < 0.0 || t > closestHit) continue;
+            closestHit = query.t = t;
+            query.color = sphere.getColor();
+            query.normal = unitVector(subtract(add(ro, multiply(rd, t)), sphere.getCenter()));
         }
-        return new Pair<>(bestT,sphereIndex);
+        //Plane
+        vec3 planeNormal = new vec3(0,1,0);
+        vec3 planePoint = new vec3(0,-0.5,0);
+        for(int i = 0; i < 1;i++){
+            float t = planeIntersect(ro,rd,planeNormal,planePoint);
+            if(t < 0.0 || t > closestHit) continue;
+            closestHit = query.t = t;
+            query.color = checkerboard(add(ro,multiply(rd,t)),3.0);
+            query.normal = planeNormal;
+        }
+        return query;
     }
+
+
+    public static float planeIntersect(vec3 ro, vec3 rd, vec3 n, vec3 p){
+        return ((float) dot(subtract(p,ro),n)) / ((float) dot(rd,n));
+    }
+    // checkerboard pattern based on position of point with a center line
+    public static vec3 checkerboard(vec3 point, double tileSize){
+        vec2 p = vec2.divide(point.getXY() , tileSize);
+        vec2 t = vec2.floor(vec2.add(p,0.5));
+        if(t.getX() == 0.0 || t.getY() == 0.0) // middle line for better orientation
+            return new vec3(1.0,0.8,0.4);
+        return mix(new vec3(1.0),new vec3(0.1),(t.getX()+t.getY())%2.0 );
+    }
+
 }

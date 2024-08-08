@@ -11,6 +11,11 @@ public class vec3 {
         this.y = y;
         this.z = z;
     }
+    public vec3(double x){
+        this.x = x;
+        this.y = x;
+        this.z = x;
+    }
     public double getX() {
         return x;
     }
@@ -23,7 +28,9 @@ public class vec3 {
     public double length(){
         return Math.sqrt(x*x + y*y + z*z);
     }
-
+    public vec2 getXY(){
+        return new vec2(x,y);
+    }
 
     public static vec3 add(vec3 v1, vec3 v2){
         return new vec3(v1.x+v2.x, v1.y+v2.y, v1.z+v2.z);
@@ -43,11 +50,30 @@ public class vec3 {
     public static vec3 divide(vec3 v1, double scalar){
         return new vec3(v1.x/scalar, v1.y/scalar, v1.z/scalar);
     }
+    public static vec3 divide(vec3 v1, vec3 v2){
+        return new vec3(v1.x/v2.x, v1.y/v2.y, v1.z/v2.z);
+    }
     public static double dot(vec3 v1, vec3 v2){
         return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
     }
     public static vec3 unitVector(vec3 v1){
         return divide(v1,v1.length());
+    }
+    public static vec3 mix(vec3 one, vec3 other, double factor) {
+        return new vec3(
+                one.getX() * (1.0 - factor) + other.getX() * factor,
+                one.getY() * (1.0 - factor) + other.getY() * factor,
+                one.getZ() * (1.0 - factor) + other.getZ() * factor
+        );
+    }
+    public static vec3 add(vec3 v, double d){
+        return new vec3(v.getX()+d, v.getY()+d, v.getZ()+d);
+    }
+    public static vec3 pow(vec3 v1, vec3 v2){
+        return new vec3(Math.pow(v1.getX(),v2.getX()), Math.pow(v1.getY(),v2.getY()), Math.pow(v1.getZ(),v2.getZ()));
+    }
+    public static vec3 clamp(vec3 v1, double low, double high){
+        return new vec3(Math.clamp(v1.getX(),low,high), Math.clamp(v1.getY(),low,high), Math.clamp(v1.getZ(),low,high));
     }
     @Override
     public String toString(){
