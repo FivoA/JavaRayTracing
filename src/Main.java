@@ -21,6 +21,8 @@ public class Main {
     //these values are chosen by pure arbitrariness
     private static final vec3 sunDirection = new vec3(0,0,1);
     private static final vec3 sunColor = new vec3(1.64, 1.27, 0.99);
+    private static final vec3 skyColorHigh = new vec3(0.14, 0.21, 0.49);
+
     private static final List<Sphere> sphereList = new ArrayList<Sphere>();
 
     public static color rayColor(Ray r){
@@ -30,10 +32,8 @@ public class Main {
         if (sphereIndex >= 0 && t > 0.0) {
             vec3 hitPoint = r.pointAt(t);
             vec3 normal = subtract(hitPoint,sphereList.get(sphereIndex).center);
-            double iD = 0.8 * diffuseLight(normal);
-            double iA = 0.2;
-
-            vec3 col =  add(multiply(sphereList.get(sphereIndex).getColor(), iD),multiply(sphereList.get(sphereIndex).getColor(), iA));
+            vec3 light = lightAtPoint(hitPoint,normal);
+            vec3 col = multiply(light,sphereList.get(sphereIndex).getColor());
             return new color(col.getX(),col.getY(),col.getZ());
         }
 
@@ -128,10 +128,13 @@ public class Main {
             image.setRGB(i, row, rgb);
         }
     }
-    public static double diffuseLight(vec3 N){
+    public static vec3 lightAtPoint(vec3 point, vec3 N){
         vec3 L = unitVector(sunDirection);
-        return Math.clamp(dot(N,L),0.0,1.0);
+        double NdL = Math.max(dot(N,L),0.0);
+        double NdSky = Math.clamp(0.5*N.getY()+0.5, 0.0, 1.0 );
+        return add(multiply(sunColor,NdL), multiply(skyColorHigh , NdSky));
     }
+
     public static Pair<Double, Integer> closestSphereIntersect(Ray ray){
         double closestHit = Double.MAX_VALUE;
         double bestT = -1.0;
