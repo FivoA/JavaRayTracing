@@ -19,7 +19,7 @@ public class Main {
     private static final int NUM_CORES = Runtime.getRuntime().availableProcessors();
     private static BufferedImage image;
     //these values are chosen by pure arbitrariness
-    private static final vec3 sunDirection = new vec3(-4,3,1);
+    private static final vec3 sunDirection = new vec3(0,0,1);
     private static final vec3 sunColor = new vec3(1.64, 1.27, 0.99);
     private static final List<Sphere> sphereList = new ArrayList<Sphere>();
 
@@ -53,23 +53,29 @@ public class Main {
 
 
     public static void main(String[] args) throws IOException {
-        sphereList.add(new Sphere(0.5, new vec3(0, 0, -1),new color(1,0,0)));
-        sphereList.add(new Sphere(0.5, new vec3(2, 0, -2), new color(0,1,0)));
+        sphereList.add(new Sphere(0.5, new vec3(0, 0, -2),new color(1,0,0)));
+        sphereList.add(new Sphere(0.5, new vec3(2, 0, -4), new color(0,1,0)));
+        sphereList.add(new Sphere(0.5, new vec3(-2, 0, -6.5), new color(0,1,0)));
+
         double aspect_ratio = 16.0 / 9.0;
         int image_width = 400;
         int image_height = (int) (image_width / aspect_ratio);
 
+        // FOV in degrees
+        double vertical_fov_degrees = 45.0;
+        double vertical_fov_radians = Math.toRadians(vertical_fov_degrees);
+
         //camera code
-        double distanceToViewport = 1.0;
-        double viewport_height = 2.0;
-        double viewport_width = viewport_height * ((double) image_width / image_height);
+        double viewport_height = 2.0 * Math.tan(vertical_fov_radians / 2.0);
+        double viewport_width = viewport_height * aspect_ratio;
+
+
         vec3 camera_center = new point3(0,0,0);
-        // viewport vectors
         vec3 viewRightVec = new vec3(viewport_width,0,0);
         vec3 viewDownVec = new vec3(0,-viewport_height,0);
 
-        vec3 deltaRight = divide(viewRightVec,image_width);
-        vec3 deltaDown = divide(viewDownVec,image_height);
+        vec3 deltaRight = divide(viewRightVec,image_width-1);
+        vec3 deltaDown = divide(viewDownVec,image_height-1);
 
         vec3 viewport_upper_left_point = subtract(camera_center,new vec3(0,0,1));
         viewport_upper_left_point = subtract(viewport_upper_left_point,divide(viewRightVec,2.0) );
