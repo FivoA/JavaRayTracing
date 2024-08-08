@@ -33,9 +33,10 @@ To use the Ray-Tracer, simply clone the repo and run the Main.java class. This s
 
 - [x] Set up multithreaded rendering of .png image of scene
 - [x] Simple Sky-Gradient
-- [ ] Intersections with different Objects like spheres
-- [ ] Lighting, Shadows and Anti-Aliasing
-- [ ] Reflections
+- [x] Intersections with multiple spheres
+- [ ] Lighting, Shadows and Anti-Aliasing (MSAA)
+- [ ] Reflections and modular "RTX on"- Mode
+- [ ] Bounding volume hierarchy for faster intersections
 
 
 <!-- CONTACT -->
@@ -48,7 +49,7 @@ Fivo Ahmed - @fivo_ow (Discord) - fivo.ahmed23@gmail.com
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
 
-This Code has been built with strong inspiration from the "Ray Tracing in One Weekend" - series by Peter Shirley, Trevor David Black, and Steve Hollasch as well as my learnings from the course IN0039 at the Technical University of Munich! 
+This Code has been built with inspiration from the "Ray Tracing in One Weekend" - series by Peter Shirley, Trevor David Black, and Steve Hollasch as well as being largely based on my learnings from the course IN0039 at the Technical University of Munich! 
 * [Ray Tracing in One Weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html)
 
 
