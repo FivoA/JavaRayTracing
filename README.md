@@ -35,7 +35,7 @@ To use the Ray-Tracer, simply clone the repo and run the Main.java class. This s
 - [x] Simple Sky-Gradient
 - [x] Intersections with multiple spheres
 - [ ] Lighting, Shadows and Anti-Aliasing (MSAA)
-- [ ] Reflections and modular "RTX on"-Mode
+- [ ] Reflections and modular "RTX on"- Mode
 - [ ] Bounding volume hierarchy for faster intersections
 
 
