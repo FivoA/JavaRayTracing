@@ -32,7 +32,7 @@ What this Ray-Tracer is:
 
 <!-- GETTING STARTED -->
 ## Performance improvements
-I did this
+Currently, the only performance improvement I've implemented is multithreading, which improved rendering performance of a simple scene with only diffuse spheres by 400%.
 
 <!-- USAGE EXAMPLES -->
 ## Usage
