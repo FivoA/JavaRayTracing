@@ -14,7 +14,11 @@ What this Ray-Tracer is:
 * Probably a lot of fun, you should check it out :smile:
 
 ## Showcase
-![alt text](https://github.com/FivoA/JavaRayTracing/blob/master/Mix_Different_Setup.png?raw=true)
+<div style="display: flex; justify-content: space-around;">
+    <img src="https://github.com/FivoA/JavaRayTracing/blob/master/Mix_Different_Setup.png?raw=true" alt="Mix Different Setup" width="300"/>
+    <img src="https://github.com/FivoA/JavaRayTracing/blob/master/Spheres_Cast_Shadows.png?raw=true" alt="Spheres Cast Shadows" width="300"/>
+    <img src="https://github.com/FivoA/JavaRayTracing/blob/master/Mix_Different_Setup.png?raw=true" alt="Mix Different Setup" width="300"/>
+</div>
 
 <!-- GETTING STARTED -->
 ## Using the Ray-Tracer
