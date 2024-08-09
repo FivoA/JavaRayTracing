@@ -34,8 +34,8 @@ To use the Ray-Tracer, simply clone the repo and run the Main.java class. This s
 - [x] Set up multithreaded rendering of .png image of scene
 - [x] Simple Sky-Gradient
 - [x] Intersections with multiple spheres
-- [x] Lighting, Shadows and Anti-Aliasing (MSAA)
-- [ ] Reflections and modular "RTX on"- Mode
+- [x] Lighting, Shadows, Environment-Map, and Anti-Aliasing (MSAA)
+- [x] Reflections for diffuse and metallic spheres
 - [ ] Bounding volume hierarchy for faster intersections
 
 
