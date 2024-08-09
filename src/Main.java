@@ -12,9 +12,11 @@ import java.awt.image.BufferedImage;
 
 import static Math_Util.Sphere.hit_sphere;
 import static Math_Util.color.*;
+import static Math_Util.vec3.add;
+import static Math_Util.vec3.multiply;
 
 public class Main {
-    private static final int MSAA_LEVEL = 8;
+    private static final int MSAA_LEVEL = 4;
     private static final double aspect_ratio = 16.0 / 9.0;
     private static final int image_width = 400;
     private static final int image_height = (int) (image_width / aspect_ratio);
@@ -30,17 +32,11 @@ public class Main {
     private static final List<Sphere> sphereList = new ArrayList<Sphere>();
 
     public static color rayColor(Ray r){
-        RayQuery query = sceneIntersect(r.getOrigin(),r.getDirection());
-        if (query.t >= 0.0) {
-            vec3 hitPoint = add(r.getOrigin(),multiply(r.getDirection(),query.t));
-            vec3 light = lightAtPoint(hitPoint,query.normal);
-
-            vec3 col =  multiply( query.color , light);
-            col = tonemapAndGammaCorrect(col);
-            return new color(col.getX(),col.getY(),col.getZ());
-        }
-
-
+        vec3 col =  RTXOn(r.getOrigin(), r.getDirection());
+        col = tonemapAndGammaCorrect(col);
+        return new color(col.getX(), col.getY(), col.getZ());
+    }
+    public static color backgroundColor(Ray r){
         //gradient function for sky, aka ray has not hit sphere or plane
         vec3 unitDir = unitVector(r.getDirection());
         double a = 0.5 * (unitDir.getY() + 1.0);
@@ -52,11 +48,10 @@ public class Main {
         return col;
     }
 
-
     public static void main(String[] args) throws IOException {
-        sphereList.add(new Sphere(0.25, new vec3(0, -0.25, -2),new color(0.3,0.8,0.3)));
-        sphereList.add(new Sphere(0.5, new vec3(1, 0, -2.2), new color(0.8,0.8,0.3)));
-        sphereList.add(new Sphere(0.5, new vec3(-2, 0, -7), new color(0.8,0.3,0.3)));
+        sphereList.add(new Sphere(0.25, new vec3(0, -0.15, -2),new color(0.2,0.9,0.2),false));
+        sphereList.add(new Sphere(0.5, new vec3(1, 0.1, -3.5), new color(0.9,0.2,0.7),false));
+        sphereList.add(new Sphere(0.5, new vec3(-2, 0.2, -7), new color(0.8,0.3,0.3),true));
 
         // FOV in degrees
         double vertical_fov_degrees = 45.0;
@@ -128,7 +123,7 @@ public class Main {
                 sampleRayDir = unitVector(sampleRayDir);
 
                 Ray r = new Ray(cameraCenter, sampleRayDir);
-                col = add(col, rayColor(r));
+                col = color.add(col, rayColor(r));
             }
             col = color.divide(col,MSAA_LEVEL+1);
             //
@@ -157,11 +152,12 @@ public class Main {
     public static RayQuery sceneIntersect(vec3 ro, vec3 rd){
         double closestHit = Double.MAX_VALUE;
         // Query with t < 0 has not hit anything
-        RayQuery query = new RayQuery(-1.0,new vec3(0),new vec3(0));
+        RayQuery query = new RayQuery(-1.0,new vec3(0),new vec3(0), false);
         //Spheres
         for (Sphere sphere : sphereList) {
             double t = hit_sphere(sphere, new Ray(ro, rd));
             if (t < 0.0 || t > closestHit) continue;
+            query.fullyDiffuse = sphere.fullyDiffuse;
             closestHit = query.t = t;
             query.color = sphere.getColor();
             query.normal = unitVector(subtract(add(ro, multiply(rd, t)), sphere.getCenter()));
@@ -181,17 +177,56 @@ public class Main {
 
 
 
+   public static vec3 RTXOn(vec3 ro, vec3 rd){
+      double specularPercent = 0.368;
+      double diffusePercent = 1.0 -specularPercent;
+      int MAX_BOUNCES = 3;
+
+      double contribution = 1.0;
+      vec3 col = new vec3(0);
+      for(int i = 0; i < MAX_BOUNCES; i++){
+          RayQuery query = sceneIntersect(ro,rd);
+          if (query.fullyDiffuse){
+              vec3 hitPoint = add(ro,multiply(rd,query.t));
+              vec3 light = lightAtPoint(hitPoint,query.normal);
+              col = add(col,  multiply(multiply(multiply(query.color,light), diffusePercent), contribution));
+              break;
+          }
+          if(query.t < 0.0){
+              col = add(col, multiply(backgroundColor(new Ray(ro, rd)),contribution));
+              break;
+          }
+          vec3 hitPoint = add(ro,multiply(rd,query.t));
+          vec3 light = lightAtPoint(hitPoint,query.normal);
+          col = add(col,  multiply(multiply(multiply(query.color,light), diffusePercent), contribution));
+
+          ro = add(hitPoint , multiply(query.normal,0.01));
+          rd = reflect(rd,query.normal);
+
+          contribution *= specularPercent;
+      }
+      return col;
+    }
+
 
     public static float planeIntersect(vec3 ro, vec3 rd, vec3 n, vec3 p){
         return ((float) dot(subtract(p,ro),n)) / ((float) dot(rd,n));
     }
-    // checkerboard pattern based on position of point with a center line
-    public static vec3 checkerboard(vec3 point, double tileSize){
-        vec2 p = vec2.divide(point.getXY() , tileSize);
-        vec2 t = vec2.floor(vec2.add(p,0.5));
-        if(t.getX() == 0.0 || t.getY() == 0.0) // middle line for better orientation
-            return new vec3(1.0,0.8,0.4);
-        return mix(new vec3(1.0),new vec3(0.1),(t.getX()+t.getY())%2.0 );
+    // pattern based on position of point with a center line
+    public static vec3 checkerboard(vec3 point, double tileSize) {
+        vec2 p = vec2.divide(point.getXY(), tileSize);
+        vec2 t = vec2.floor(vec2.add(p, 0.5));
+        vec3 darkGray = new vec3(0.3);
+        if (t.getX() == 0.0 || t.getY() == 0.0) {
+            return darkGray;
+        }
+        double checker = (t.getX() + t.getY()) % 2.0;
+        return mix(new vec3(1.0), new vec3(0.1), checker);
     }
+
+
+
+
+
 
 }

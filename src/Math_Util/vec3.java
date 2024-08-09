@@ -75,6 +75,9 @@ public class vec3 {
     public static vec3 clamp(vec3 v1, double low, double high){
         return new vec3(Math.clamp(v1.getX(),low,high), Math.clamp(v1.getY(),low,high), Math.clamp(v1.getZ(),low,high));
     }
+    public static vec3 reflect(vec3 v, vec3 normal){
+        return subtract(v, multiply(normal, 2.0 * dot(normal, v)));
+    }
     @Override
     public String toString(){
         return this.x + ", " + this.y + ", " + this.z;

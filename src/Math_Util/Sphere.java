@@ -7,10 +7,12 @@ public class Sphere {
     public double radius;
     public vec3 center;
     private color color;
-    public Sphere(double radius, vec3 center, color color) {
+    public boolean fullyDiffuse;
+    public Sphere(double radius, vec3 center, color color, boolean fullyDiffuse) {
         this.radius = radius;
         this.center = center;
         this.color = color;
+        this.fullyDiffuse = fullyDiffuse;
     }
     public static double hit_sphere(Sphere sphere, Ray ray) {
         vec3 oc = subtract(sphere.center, ray.getOrigin());
