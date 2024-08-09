@@ -31,14 +31,8 @@ What this Ray-Tracer is:
 </div>
 
 <!-- GETTING STARTED -->
-## Using the Ray-Tracer
-
-To get a local copy up and running follow these simple steps:
-
-### Prerequisites
-
-A simple setup of Java and JavaFX should suffice. More will be added to this section if the project requires any other prerequisites to run it. <br>
-For Beginners: If you've never used JavaFX, make sure to follow the official documentation well and set all the libraries up correctly in the IDE that you clone the repo into.
+## Performance improvements
+I did this
 
 <!-- USAGE EXAMPLES -->
 ## Usage
