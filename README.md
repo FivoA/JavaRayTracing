@@ -20,13 +20,14 @@ What this Ray-Tracer is:
         <p>A mix of metallic and diffuse spheres</p>
     </div>
     <div style="text-align: center;">
-        <img src="https://github.com/FivoA/JavaRayTracing/blob/master/Spheres_Cast_Shadows.png?raw=true" alt="Spheres Cast Shadows" width="300"/>
-        <p>Fully diffuse spheres casting shadows on each other</p>
-    </div>
-    <div style="text-align: center;">
         <img src="https://github.com/FivoA/JavaRayTracing/blob/master/Mix_Different_Setup.png?raw=true" alt="Mix Different Setup" width="300"/>
         <p>A mix with different positions</p>
     </div>
+    <div style="text-align: center;">
+        <img src="https://github.com/FivoA/JavaRayTracing/blob/master/Spheres_Cast_Shadows.png?raw=true" alt="Spheres Cast Shadows" width="300"/>
+        <p>Fully diffuse spheres casting shadows on each other</p>
+    </div>
+    
 </div>
 <!-- GETTING STARTED -->
 ## Using the Ray-Tracer
