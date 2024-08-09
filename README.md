@@ -29,6 +29,7 @@ What this Ray-Tracer is:
     </div>
     
 </div>
+
 <!-- GETTING STARTED -->
 ## Using the Ray-Tracer
 
