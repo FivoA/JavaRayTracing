@@ -1,6 +1,6 @@
 # Static Ray-Tracer in Java from Scratch
 
-*a static ray tracer made in java from "scratch"*
+*a static cpu side ray tracer made in java from "scratch"*
 
 
 <!-- ABOUT THE PROJECT -->
