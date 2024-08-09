@@ -13,6 +13,8 @@ What this Ray-Tracer is:
 * A venture into linear algebra and Ray-Tracing acceleration techniques
 * Probably a lot of fun, you should check it out :smile:
 
+## Showcase
+
 <!-- GETTING STARTED -->
 ## Using the Ray-Tracer
 
@@ -26,7 +28,8 @@ For Beginners: If you've never used JavaFX, make sure to follow the official doc
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-To use the Ray-Tracer, simply clone the repo and run the Main.java class. This should create a .png image of the scene. It will be output in the project directory, where you can view it!
+To use the Ray-Tracer, simply clone the repo and run the Main.java class. This should create a .png image of the scene. It will be output in the project directory, where you can view it! <br>
+Settings for MSAA, Resolution and Spheres: To change any of these, change "MSAA_LEVEL", "image_width" or the attributes of the spheres generated in the beginning of the main function respectively.
 
 <!-- ROADMAP -->
 ## Roadmap
