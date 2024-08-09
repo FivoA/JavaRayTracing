@@ -14,12 +14,20 @@ What this Ray-Tracer is:
 * Probably a lot of fun, you should check it out :smile:
 
 ## Showcase
-<div style="display: flex; justify-content: space-around;">
-    <img src="https://github.com/FivoA/JavaRayTracing/blob/master/Mix_Different_Setup.png?raw=true" alt="Mix Different Setup" width="300"/>
-    <img src="https://github.com/FivoA/JavaRayTracing/blob/master/Spheres_Cast_Shadows.png?raw=true" alt="Spheres Cast Shadows" width="300"/>
-    <img src="https://github.com/FivoA/JavaRayTracing/blob/master/Mix_Different_Setup.png?raw=true" alt="Mix Different Setup" width="300"/>
+<div style="display: flex; justify-content: space-around; align-items: center;">
+    <div style="text-align: center;">
+        <img src="https://github.com/FivoA/JavaRayTracing/blob/master/Mix_Diffuse_Metallic_Spheres.png?raw=true" alt="Mix Different Setup" width="300"/>
+        <p>A mix of metallic and diffuse spheres</p>
+    </div>
+    <div style="text-align: center;">
+        <img src="https://github.com/FivoA/JavaRayTracing/blob/master/Spheres_Cast_Shadows.png?raw=true" alt="Spheres Cast Shadows" width="300"/>
+        <p>Fully diffuse spheres casting shadows on each other</p>
+    </div>
+    <div style="text-align: center;">
+        <img src="https://github.com/FivoA/JavaRayTracing/blob/master/Mix_Different_Setup.png?raw=true" alt="Mix Different Setup" width="300"/>
+        <p>A mix with different positions</p>
+    </div>
 </div>
-
 <!-- GETTING STARTED -->
 ## Using the Ray-Tracer
 
