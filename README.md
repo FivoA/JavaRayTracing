@@ -14,7 +14,7 @@ What this Ray-Tracer is:
 * Probably a lot of fun, you should check it out :smile:
 
 ## Showcase
-![alt text]https://github.com/FivoA/JavaRayTracing/blob/master/Mix_Different_Setup.png?raw=true)
+![alt text](https://github.com/FivoA/JavaRayTracing/blob/master/Mix_Different_Setup.png?raw=true)
 
 <!-- GETTING STARTED -->
 ## Using the Ray-Tracer
