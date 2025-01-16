@@ -9,9 +9,8 @@
 Ray-Tracing is a fascinating but demanding technique for rendering. This is my go at it using Java doing it as "from the ground up" as possible.
 
 What this Ray-Tracer is:
-* A "static" Ray-Tracer, meaning it does not currently render a scene at runtime with user input for navigation. Rather, it renders a .png image of the programmed scene which includes different Objects and Lighting.
-* A venture into linear algebra and Ray-Tracing acceleration techniques
-* Probably a lot of fun, you should check it out :smile:
+* A "static" Ray-Tracer, meaning it does not currently render a scene at runtime. Rather, it renders a .png image of the programmed scene which includes different Objects and Lighting.
+* A personal venture into linear algebra and Ray-Tracing acceleration techniques
 
 ## Showcase
 <div style="display: flex; justify-content: space-around; align-items: center;">
